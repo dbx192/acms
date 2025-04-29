@@ -1,0 +1,65 @@
+/* 蓝色主题分页样式 */
+.pagination {
+    margin: 25px 0;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 分页项基础样式 */
+.pagination li {
+    margin: 0 3px;
+    transition: all 0.2s ease;
+}
+
+/* 链接样式 - 匹配导航栏选中色 */
+.pagination a {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background: #fff;
+    display: inline-block;
+    min-width: 36px;
+    text-align: center;
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+/* 悬停效果 - 浅蓝色过渡 */
+.pagination a:hover {
+    background: #f0f7ff;
+    border-color: #cce0ff;
+    color: #0066cc;
+}
+
+/* 当前页样式 - 匹配导航栏选中蓝 */
+.pagination .active a {
+    background: #1976d2; /* 主蓝色 */
+    color: white;
+    border-color: #1976d2;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+/* 导航按钮样式（Previous/Next） */
+.pagination li:first-child a,
+.pagination li:last-child a {
+    color: #1976d2;
+    font-weight: 500;
+    border-color: #1976d2;
+    background: rgba(25, 118, 210, 0.05);
+}
+
+/* 导航按钮悬停效果 */
+.pagination li:first-child a:hover,
+.pagination li:last-child a:hover {
+    background: rgba(25, 118, 210, 0.1);
+}
+
+/* 响应式调整 */
+@media (max-width: 576px) {
+    .pagination a {
+        padding: 6px 12px;
+        min-width: 30px;
+    }
+}
