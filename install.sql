@@ -22,13 +22,42 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `acms_article_tag`;
 CREATE TABLE `acms_article_tag`  (
-  `id` int(0) NOT NULL AUTO_INCREMENT,
-  `article_id` int(0) NOT NULL COMMENT '文章ID',
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `article_id` int unsigned NOT NULL COMMENT '文章ID',
   `tag_id` int(0) NOT NULL COMMENT '标签ID',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `article_tag`(`article_id`, `tag_id`) USING BTREE,
   INDEX `tag_id`(`tag_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '文章标签关联表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for acms_user_likes
+-- ----------------------------
+DROP TABLE IF EXISTS `acms_user_likes`;
+CREATE TABLE `acms_user_likes` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL COMMENT '用户ID',
+  `article_id` int unsigned NOT NULL COMMENT '文章ID',
+  `created_at` timestamp(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `updated_at` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `user_article`(`user_id`, `article_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户收藏表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for acms_user_histories
+-- ----------------------------
+DROP TABLE IF EXISTS `acms_user_histories`;
+CREATE TABLE `acms_user_histories` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL COMMENT '用户ID',
+  `article_id` int unsigned NOT NULL COMMENT '文章ID',
+  `view_count` int(0) NOT NULL DEFAULT 1 COMMENT '浏览次数',
+  `updated_at` timestamp(0) NULL DEFAULT NULL COMMENT '最后浏览时间',
+  `created_at` timestamp(0) NULL DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  INDEX `user_article`(`user_id`, `article_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户浏览历史表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of acms_article_tag
@@ -40,7 +69,7 @@ INSERT INTO `acms_article_tag` VALUES (1, 1, 2);
 -- ----------------------------
 DROP TABLE IF EXISTS `acms_articles`;
 CREATE TABLE `acms_articles`  (
-  `id` int(0) NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文章标题',
   `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '文章内容',
   `summary` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '文章摘要',
@@ -69,6 +98,66 @@ CREATE TABLE `acms_articles`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '文章表' ROW_FORMAT = Dynamic;
 
 -- ----------------------------
+-- Records of acms_user_likes
+-- ----------------------------
+INSERT INTO `acms_user_likes` (user_id, article_id, created_at) VALUES
+(1, 1, '2025-04-29 10:00:00'),
+(1, 2, '2025-04-29 10:05:00'),
+(1, 12, '2025-04-29 10:10:00'),
+(1, 15, '2025-04-29 10:15:00'),
+(1, 16, '2025-04-29 10:20:00'),
+(1, 5, '2025-04-29 10:25:00'),
+(1, 18, '2025-04-29 10:30:00'),
+(1, 3, '2025-04-29 10:35:00'),
+(1, 14, '2025-04-29 10:40:00'),
+(1, 17, '2025-04-29 10:45:00');
+
+-- ----------------------------
+-- Records of acms_user_histories
+-- ----------------------------
+INSERT INTO `acms_user_histories` (user_id, article_id, updated_at, created_at) VALUES
+(1, 1, '2025-04-29 09:00:00', '2025-04-29 09:00:00'),
+(1, 2, '2025-04-29 09:05:00', '2025-04-29 09:05:00'),
+(1, 12, '2025-04-29 09:10:00', '2025-04-29 09:10:00'),
+(1, 15, '2025-04-29 09:15:00', '2025-04-29 09:15:00'),
+(1, 16, '2025-04-29 09:20:00', '2025-04-29 09:20:00'),
+(1, 5, '2025-04-29 09:25:00', '2025-04-29 09:25:00'),
+(1, 18, '2025-04-29 09:30:00', '2025-04-29 09:30:00'),
+(1, 3, '2025-04-29 09:35:00', '2025-04-29 09:35:00'),
+(1, 14, '2025-04-29 09:40:00', '2025-04-29 09:40:00'),
+(1, 17, '2025-04-29 09:45:00', '2025-04-29 09:45:00');
+
+-- ----------------------------
+-- Table structure for acms_comment_likes
+-- ----------------------------
+DROP TABLE IF EXISTS `acms_comment_likes`;
+CREATE TABLE `acms_comment_likes` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int unsigned NOT NULL COMMENT '用户ID',
+  `comment_id` int unsigned NOT NULL COMMENT '评论ID',
+  `article_id` int unsigned NOT NULL COMMENT '文章ID',
+  `created_at` timestamp(0) NULL DEFAULT NULL COMMENT '创建时间',
+  `updated_at` timestamp(0) NULL DEFAULT NULL COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `user_comment`(`user_id`, `comment_id`)
+) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '评论点赞表' ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of acms_comment_likes
+-- ----------------------------
+  INSERT INTO `acms_comment_likes` (user_id, comment_id,article_id, created_at) VALUES
+  (1, 1,1, '2025-04-29 10:00:00'),
+  (1, 2,1, '2025-04-29 10:05:00'),
+  (1, 3,1, '2025-04-29 10:10:00'),
+  (1, 4,1, '2025-04-29 10:15:00'),
+  (1, 5,1, '2025-04-29 10:20:00'),
+  (1, 6,1, '2025-04-29 10:25:00'),
+  (1, 7,1, '2025-04-29 10:30:00'),
+  (1, 8,1, '2025-04-29 10:35:00'),
+  (1, 9,1, '2025-04-29 10:40:00'),
+  (1, 10,1, '2025-04-29 10:45:00');
+
+-- ----------------------------
 -- Records of acms_articles
 -- ----------------------------
 INSERT INTO `acms_articles` VALUES (1, 'vscode快捷键', '以下是 VS Code 默认快捷键的系统差异对照表（一行一条）：  \r\n\r\n| 操作                     | Windows/Linux       | macOS               | 备注                     |\r\n|------------------------------|-------------------------|-------------------------|-----------------------------|\r\n| 打开用户设置                 | `Ctrl + ,`              | `⌘ + ,`                 |                             |\r\n| 打开快捷键设置               | `Ctrl + K Ctrl + S`      | `⌘ + K ⌘ + S`           | 需按组合顺序操作            |\r\n| 打开/关闭终端                | `` Ctrl + ` ``          | `` ⌘ + ` ``             | 反引号键                    |\r\n| 新建终端                     | `Ctrl + Shift + \\``     | `⌘ + Shift + \\``        |                             |\r\n| 选中所有相同单词             | `Ctrl + F2`             | `⌘ + F2`                | 类似 Sublime 的 `Alt + F3` |\r\n| 重命名变量/方法              | `F2`                    | `F2`                    | 部分 Mac 需 `fn + F2`       |\r\n| 复制当前行                   | `Alt + Shift + ↓/↑`     | `⌥ + Shift + ↓/↑`       |                             |\r\n| 跳转到某行                   | `Ctrl + G`              | `⌘ + G`                 |                             |\r\n| 文件头/文件尾                | `Ctrl + Home/End`       | `⌘ + ↑/↓`               | Mac 无直接 `Home/End` 键    |\r\n| 返回/前进历史位置            | `Alt + ←/→`             | `⌥ + ←/→`               |                             |\r\n| 查找当前文件方法             | `Ctrl + Shift + O`      | `⌘ + Shift + O`         |                             |\r\n| 全局符号搜索                 | `Ctrl + T`              | `⌘ + T`                 |                             |\r\n| 查看定义                     | `F12`                   | `F12`                   | 部分 Mac 需 `fn + F12`      |\r\n| 提取方法                     | `Ctrl + .`              | `⌘ + .`                 | 需选中代码后触发           |\r\n| 快速打开文件                 | `Ctrl + P`              | `⌘ + P`                 |                             |\r\n| 关闭当前文件                 | `Ctrl + W`              | `⌘ + W`                 |                             |\r\n| 切换标签页                   | `Ctrl + PageUp/PageDown`| `⌘ + Option + ←/→`       | Mac 无 `PageUp/PageDown`    |\r\n| 跳转到下一个错误             | `F8`                    | `F8`                    | 部分 Mac 需 `fn + F8`       |\r\n\r\n**注意事项**：\r\n1. Mac 功能键：`F1-F12` 默认绑定系统功能（如亮度调节），需配合 `fn` 键（或修改系统设置）。  \r\n2. Linux 差异：部分键盘可能需要 `Fn + Home/End` 或自定义映射。  \r\n3. 符号替代：  \r\n   • `⌘` = Command (`Cmd`)  \r\n\r\n   • `⌥` = Option (`Alt`)  \r\n\r\n   • `⌃` = Control (`Ctrl`)  \r\n\r\n\r\n表格严格遵循 官方默认键位，无自定义内容。', 'MySQL索引优化核心要点', '', 1, '测试,技术', 32, 41, 1, 1, 1, 1, '数据库优化指南', 'MySQL,索引,性能', '数据库优化技术文章', '2025-04-28 17:41:33', '2025-04-29 14:11:19', 1, 1);
@@ -88,7 +177,7 @@ INSERT INTO `acms_articles` VALUES (18, '测试图片', '![](/app/acms/upload/im
 -- ----------------------------
 DROP TABLE IF EXISTS `acms_categories`;
 CREATE TABLE `acms_categories`  (
-  `id` int(0) NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '分类名称',
   `slug` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '分类别名',
   `parent_id` int(0) NOT NULL DEFAULT 0 COMMENT '父级ID',
@@ -180,7 +269,7 @@ INSERT INTO `acms_comments` VALUES (30, '我们团队50人采用中等粒度（1
 -- ----------------------------
 DROP TABLE IF EXISTS `acms_tags`;
 CREATE TABLE `acms_tags`  (
-  `id` int(0) NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '标签名称',
   `slug` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '标签别名',
   `description` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '标签描述',

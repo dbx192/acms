@@ -174,24 +174,24 @@
                     @foreach($categoryTree as $navCategory)
                         @if(isset($navCategory['children']) && count($navCategory['children']) > 0)
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle {{ (isset($category) && $category->id == $navCategory['id']) || (isset($article) && $article->category_id == $navCategory['id']) ? 'active' : '' }}" href="/app/acms/category/{{$navCategory['id']}}" id="navbarDropdown{{$navCategory['id']}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a class="nav-link dropdown-toggle {{ (isset($category) && $category->id == $navCategory['id']) || (isset($article) && $article->category_id == $navCategory['id']) ? 'active' : '' }}" href="/app/acms/list?category_id={{$navCategory['id']}}" id="navbarDropdown{{$navCategory['id']}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {{$navCategory['name']}}
                                 </a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{$navCategory['id']}}">
                                     @foreach($navCategory['children'] as $child)
-                                        <li><a class="dropdown-item" href="/app/acms/category/{{$child['id']}}">{{$child['name']}}</a></li>
+                                        <li><a class="dropdown-item" href="/app/acms/list?category_id={{$child['id']}}">{{$child['name']}}</a></li>
                                     @endforeach
                                 </ul>
                             </li>
                         @else
                             <li class="nav-item">
-                                <a class="nav-link {{ (isset($category) && $category->id == $navCategory['id']) || (isset($article) && $article->category_id == $navCategory['id']) ? 'active' : '' }}" href="/app/acms/category/{{$navCategory['id']}}">{{$navCategory['name']}}</a>
+                                <a class="nav-link {{ (isset($category) && $category->id == $navCategory['id']) || (isset($article) && $article->category_id == $navCategory['id']) ? 'active' : '' }}" href="/app/acms/list?category_id={{$navCategory['id']}}">{{$navCategory['name']}}</a>
                             </li>
                         @endif
                     @endforeach
                 @endisset
             </ul>
-            <form class="d-flex" action="/app/acms/search" method="GET">
+            <form class="d-flex" action="/app/acms/list" method="GET">
                 <div class="input-group">
                     <input class="form-control" type="search" name="keyword" placeholder="搜索文章..." aria-label="搜索" value="{{ $keyword ?? '' }}">
                     <button class="btn btn-primary" type="submit">
@@ -199,6 +199,26 @@
                     </button>
                 </div>
             </form>
+                <div class="d-flex align-items-center ms-3">
+                    <?php if(session('user')){ ?>
+                    <div class="nav-item dropdown">
+                        <a class="dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                            <img src="<?=htmlspecialchars(session('user.avatar'))?>" class="rounded me-2" height="40px" width="40px" /><?=htmlspecialchars(session('user.nickname'))?>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/app/user">会员中心</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/app/user/logout">退出</a></li>
+                        </ul>
+                    </div>
+                    <?php }else{ ?>
+                    <a href="/app/user/login" class="btn btn-primary me-2">登录</a>
+                    <?php if($setting['register_enable']??true){ ?>
+                    <a href="/app/user/register" class="btn btn-outline-primary">注册</a>
+                    <?php } ?>
+                    <?php } ?>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
@@ -224,7 +244,7 @@
                             <ul class="list-unstyled">
                                 @foreach($categories as $sidebarCategory)
                                 <li class="sidebar-item">
-                                    <a href="/app/acms/category/{{$sidebarCategory->id}}" class="text-decoration-none text-dark {{ (isset($category) && $category->id == $sidebarCategory->id) || (isset($article) && $article->category_id == $sidebarCategory->id) ? 'fw-bold text-primary' : '' }}">
+                                    <a href="/app/acms/list?category_id={{$sidebarCategory->id}}" class="text-decoration-none text-dark {{ (isset($category) && $category->id == $sidebarCategory->id) || (isset($article) && $article->category_id == $sidebarCategory->id) ? 'fw-bold text-primary' : '' }}">
                                         <i class="fa fa-folder-open"></i>
                                         {{$sidebarCategory->name}} 
                                         <span class="badge bg-light text-dark ms-2"><i class="fa fa-file-alt me-1"></i>{{$sidebarCategory->articles_count ?? 0}}</span>
@@ -245,7 +265,7 @@
                         <div class="card-body">
                             <div class="tag-cloud">
                                 @foreach($tags as $sidebarTag)
-                                <a href="/app/acms/tag/{{$sidebarTag->id}}" class="tag text-decoration-none">
+                                <a href="/app/acms/list?tag_id={{$sidebarTag->id}}" class="tag text-decoration-none">
                                     <i class="fa fa-tag"></i> {{$sidebarTag->name}}
                                     @if(isset($sidebarTag->articles_count))
                                     <span style="font-size:0.8em;opacity:0.85;">({{$sidebarTag->articles_count}})</span>

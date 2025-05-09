@@ -32,6 +32,10 @@
             <span class="ms-3"><i class="far fa-user"></i> {{ $article->user->nickname ?? '管理员' }}</span>
             <span class="ms-3"><i class="far fa-clock"></i> {{ date('Y-m-d H:i', strtotime($article->created_at)) }}</span>
             <span class="ms-3"><i class="far fa-eye"></i> {{ $article->views }} 阅读</span>
+            @if(session('user'))
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+                <span class="ms-3"><i class="{{ $article->is_favorite ? 'fas fa-heart text-danger' : 'far fa-heart text-secondary' }}"></i> <a href="javascript:;" onclick="toggleFavorite({{ $article->id }})" id="favorite-btn">{{ $article->is_favorite ? '取消收藏' : '收藏' }}</a></span>
+            @endif
         </div>
 
         @if (!empty($article->thumb))
@@ -118,7 +122,7 @@
             <div class="comment-list">
                 @foreach ($comments as $comment)
                     @if ($comment->parent_id == 0)
-                        @include('components.comment', ['comment' => $comment, 'level' => 0])
+                        @include('components.comment', ['comment' => $comment, 'level' => 0, 'likes_count' => $comment->likes_count ?? 0, 'is_liked' => in_array($comment->id, $liked_comments)])
                     @endif
                 @endforeach
             </div>
@@ -230,6 +234,57 @@
 
 @section('scripts')
     <script>
+        function toggleFavorite(articleId) {
+            fetch('/app/acms/user/favorite/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({article_id: articleId})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.code === 0) {
+                    const btn = document.getElementById('favorite-btn');
+                    const icon = btn.previousElementSibling;
+                    btn.innerText = btn.innerText === '收藏' ? '取消收藏' : '收藏';
+                    icon.className = icon.className.includes('fas') ? 'far fa-heart text-secondary' : 'fas fa-heart text-danger';
+                } else {
+                    alert(data.msg);
+                }
+            })
+        }
+            
+        function toggleLike(commentId) {
+            const icon = document.getElementById(`like-icon-${commentId}`);
+            const countEl = document.getElementById(`like-count-${commentId}`);
+            
+            fetch('/app/acms/user/comment/like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({comment_id: commentId, article_id: {{ $article->id}}})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.code === 0) {
+                    const isLiked = icon.className.includes('fas');
+                    icon.className = isLiked ? 'far fa-thumbs-up text-secondary' : 'fas fa-thumbs-up text-primary';
+                    if(countEl) {
+                        countEl.innerText = data.data?.likes_count || 0;
+                    }
+                } else {
+                    alert(data.msg);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
         (function() {
             const mask = document.getElementById('img-viewer-mask');
             const imgEl = document.getElementById('img-viewer-img');

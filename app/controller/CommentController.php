@@ -61,7 +61,7 @@ class CommentController
         
         Comment::create($data);
         
-        return json(['code' => 0, 'msg' => '评论添加成功']);
+        return json(['code' => 0, 'msg' => '评论添加成功，审核成功就会显示！']);
     }
     
     /**

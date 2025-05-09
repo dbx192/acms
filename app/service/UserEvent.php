@@ -12,39 +12,37 @@ use stdClass;
 class UserEvent
 {
 
-    /**
-     * 当渲染用户端顶部导航菜单时
-     * @param stdClass $object
-     * @return void
-     */
+     public const SIDEBAR = [
+        [
+            'name' => 'ACMS',
+            'items' => [
+                ['name' => 'CMS系统', 'url' => '/app/acms'],
+            ],
+        ],
+    ];
+
     public function onUserNavRender(\stdClass $object)
+    {
+        $this->renderNavigation($object, 'navs');
+    }
+
+
+    private function renderNavigation(\stdClass $object, $property)
     {
         $request = request();
         $path = $request ? $request->path() : '';
-        $categories = Category::getCategoryTree();
 
-        $navs = [];
+        $categories = self::SIDEBAR;
+
         foreach ($categories as $category) {
-            $navs[] = $this->buildMenuItem($category, $path);
-        }
-        // dump($navs);
-        $object->navs = $navs;
-    }
+            $category['items'] = array_map(function ($item) use ($path) {
+                $item['class'] = ($path === $item['url']) ? 'active' : '';
 
-    private function buildMenuItem($category, $path)
-    {
-        $item = [
-            'name' => $category->name,
-            'url' => '/app/acms/category/' . $category->id,
-            'class' => ($path === '/app/acms/category/' . $category->id) ? 'active' : '',
-        ];
-        if (!empty($category->children)) {
-            $item['items'] = [];
-            foreach ($category->children as $child) {
-                $item['items'][] = $this->buildMenuItem($child, $path);
-            }
+                return $item;
+            }, $category['items']);
+
+            $object->{$property}[] = $category;
         }
-        return $item;
     }
 
     /**
@@ -60,8 +58,9 @@ class UserEvent
         $object->sidebars[] = [
             'name' => 'CMS系统',
             'items' => [
-                ['name' => '用户中心菜单1', 'url' => '/app/nat/apps', 'class' => $path === '/app/nat/apps' ? 'active' : ''],
-                ['name' => '用户中心菜单2', 'url' => '/app/nat/token', 'class' => $path === '/app/nat/token' ? 'active' : ''],
+                ['name' => '最近看过', 'url' => '/app/acms/user/history', 'class' => $path === '/app/acms/user/history' ? 'active' : ''],
+                ['name' => '收藏文章', 'url' => '/app/acms/user/likes', 'class' => $path === '/app/acms/user/likes' ? 'active' : ''],
+                ['name' => '评论文章', 'url' => '/app/acms/user/commented', 'class' => $path === '/app/acms/user/commented' ? 'active' : ''],
             ],
         ];
     }

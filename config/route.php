@@ -8,28 +8,37 @@ use plugin\acms\app\admin\controller\UploadController;
 use plugin\acms\app\admin\controller\DashboardController;
 use plugin\acms\app\controller\CommentController as IndexCommentController;
 use plugin\acms\app\controller\IndexController;
+use plugin\acms\app\controller\UserController;
 use Webman\Route;
+use Webman\Http\Request;
 
 // 前台路由
 Route::group('/app/acms', function () {
     // 首页
-    Route::get('', [IndexController::class, 'index']);
-    Route::get('/index', [IndexController::class, 'index']);
+    Route::get('', [IndexController::class, 'list']);
 
     // 文章详情
     Route::get('/article/{id}', [IndexController::class, 'detail']);
 
-    // 分类页面
-    Route::get('/category/{id}', [IndexController::class, 'category']);
-
-    // 标签页面
-    Route::get('/tag/{id}', [IndexController::class, 'tag']);
-
-    // 搜索页面
-    Route::get('/search', [IndexController::class, 'search']);
+    // 统一文章列表入口，所有参数通过url传递
+    Route::get('/list', [IndexController::class, 'list']);
 
     // 添加评论
     Route::post('/comment/add', [IndexCommentController::class, 'add']);
+    
+    // 用户相关路由
+    Route::group('/user', function () {
+        // 用户点赞的文章
+        Route::get('/likes', [UserController::class, 'likes']);
+        // 评论过的文章
+        Route::get('/commented', [UserController::class, 'commented']);
+        // 评论点赞
+        Route::post('/comment/like', [UserController::class, 'likeComment']);
+        // 用户收藏
+        Route::post('/favorite/toggle', [UserController::class, 'favorite']);
+        // 用户浏览历史
+        Route::get('/history', [UserController::class, 'history']);
+    });
 });
 
 // 后台路由
