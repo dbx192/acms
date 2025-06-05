@@ -193,7 +193,7 @@
             </ul>
             <form class="d-flex" action="/app/acms/list" method="GET">
                 <div class="input-group">
-                    <input class="form-control" type="search" name="keyword" placeholder="搜索文章..." aria-label="搜索" value="{{ $keyword ?? '' }}">
+                    <input class="form-control" type="search" name="keyword" placeholder="搜索文章..." aria-label="搜索" value="{{ $params['keyword'] ?? '' }}">
                     <button class="btn btn-primary" type="submit">
                         <i class="fas fa-search"></i>
                     </button>

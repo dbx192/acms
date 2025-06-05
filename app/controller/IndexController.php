@@ -26,17 +26,11 @@ class IndexController
         $categoryId = $request->get('category_id');
         $tagId = $request->get('tag_id');
         $keyword = $request->get('keyword', '');
-        $isTop = $request->get('is_top');
-        $isRecommend = $request->get('is_recommend');
-        $status = $request->get('status', 1);
         $page = $request->get('page', 1);
-        $limit = $request->get('limit', 10);
+        $limit = 10;
 
-        $query = Article::query();
+        $query = Article::query()->where('status', 1);
 
-        if ($status !== '') {
-            $query->where('status', $status);
-        }
         if ($categoryId) {
             $query->where('category_id', $categoryId);
         }
@@ -45,12 +39,7 @@ class IndexController
                 $q->where('acms_tags.id', $tagId);
             });
         }
-        if ($isTop !== null && $isTop !== '') {
-            $query->where('is_top', $isTop);
-        }
-        if ($isRecommend !== null && $isRecommend !== '') {
-            $query->where('is_recommend', $isRecommend);
-        }
+
         if ($keyword) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('title', 'like', "%{$keyword}%")
@@ -60,14 +49,12 @@ class IndexController
         }
 
         $articles = $query->orderBy('is_top', 'desc')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
             ->with('category')
             ->paginate($limit, ['*'], 'page', $page);
 
-        // 拼接分页url，保留所有参数
-        $params = $request->get();
-        $params['page'] = '(:num)';
-        $pageUrl = '/app/acms/list?' . http_build_query($params);
+        $params = $request->only(['category_id', 'tag_id', 'keyword']);
+        $pageUrl = '/app/acms/list?page=(:num)' . ($params ? '&' . http_build_query($params) : '');
 
         $paginator = new \JasonGrimes\Paginator(
             $articles->total(),
@@ -104,12 +91,6 @@ class IndexController
         if ($keyword) {
             $title = '搜索：' . $keyword . ' - 文章列表';
             $sidebarContent[] = '关键词：' . $keyword;
-        }
-        if ($isTop !== null && $isTop !== '') {
-            $sidebarContent[] = '置顶：' . ($isTop ? '是' : '否');
-        }
-        if ($isRecommend !== null && $isRecommend !== '') {
-            $sidebarContent[] = '推荐：' . ($isRecommend ? '是' : '否');
         }
 
         return view('index/list', [

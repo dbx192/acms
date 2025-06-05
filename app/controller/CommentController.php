@@ -8,24 +8,14 @@ use support\Response;
 
 class CommentController
 {
-    /**
-     * 评论列表页
-     */
-    public function index(Request $request): Response
-    {
-        if ($request->expectsJson()) {
-            return $this->getList($request);
-        }
-        return view('admin/comment/index');
-    }
-    
+
     /**
      * 获取评论列表
      */
     public function getList(Request $request): Response
     {
         $page = $request->input('page', 1);
-        $limit = $request->input('limit', 10);
+        $limit = $request->input('limit', 100);
         $article_id = $request->input('article_id', 0);
         
         $query = Comment::with(['user', 'article', 'replies'])

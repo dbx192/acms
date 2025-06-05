@@ -15,7 +15,7 @@ class UserController
     {
         $user = session('user');
         $page = $request->get('page', 1);
-        $perPage = 12;
+        $perPage = 10;
 
         $articles = UserLike::where('user_id', $user['id'])
             ->with(['article' => function ($query) {
@@ -24,10 +24,7 @@ class UserController
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        // 拼接分页url，保留所有参数
-        $params = $request->get();
-        $params['page'] = '(:num)';
-        $pageUrl = '/app/acms/user/likes?' . http_build_query($params);
+        $pageUrl = '/app/acms/user/likes?page=(:num)';
 
         $paginator = new \JasonGrimes\Paginator(
             $articles->total(),
@@ -56,10 +53,7 @@ class UserController
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        // 拼接分页url，保留所有参数
-        $params = $request->get();
-        $params['page'] = '(:num)';
-        $pageUrl = '/app/acms/user/history?' . http_build_query($params);
+        $pageUrl = '/app/acms/user/history?page=(:num)';
 
         $paginator = new \JasonGrimes\Paginator(
             $articles->total(),
@@ -79,7 +73,7 @@ class UserController
     {
         $user = session('user');
         $page = $request->get('page', 1);
-        $perPage = 12;
+        $perPage = 10;
 
         // 首先获取每个文章的最新评论ID
         $latestCommentIds = \plugin\acms\app\model\Comment::where('user_id', $user['id'])
@@ -96,9 +90,7 @@ class UserController
             ->orderBy('created_at', 'desc')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        $params = $request->get();
-        $params['page'] = '(:num)';
-        $pageUrl = '/app/acms/user/commented?' . http_build_query($params);
+        $pageUrl = '/app/acms/user/commented?page=(:num)';
 
         $paginator = new \JasonGrimes\Paginator(
             $articles->total(),
@@ -153,14 +145,14 @@ class UserController
             $like->delete();
             $comment->decrement('likes');
             return json(['code' => 0, 'msg' => '取消点赞成功', 'data' => ['liked' => false, 'likes_count' => $comment->likes]]);
-        } else {
-            CommentLike::create([
-                'user_id' => $userId,
-                'article_id' => $article_id,
-                'comment_id' => $commentId
-            ]);
-            $comment->increment('likes');
-            return json(['code' => 0, 'msg' => '点赞成功', 'data' => ['liked' => true, 'likes_count' => $comment->likes]]);
         }
+
+        CommentLike::create([
+            'user_id' => $userId,
+            'article_id' => $article_id,
+            'comment_id' => $commentId
+        ]);
+        $comment->increment('likes');
+        return json(['code' => 0, 'msg' => '点赞成功', 'data' => ['liked' => true, 'likes_count' => $comment->likes]]);
     }
 }

@@ -28,24 +28,24 @@ ACMS 提供了一套完整的内容管理解决方案，集成 Webman Admin 和 
 **直接在admin插件中心安装即可。这是最简单和方便的！（推荐）**
 
 下面是手动安装的方法：
-1. **解压插件**
+1. **解压插件**  
    将 `plugin/acms.zip` 解压到 `plugin/acms/` 目录，或直接将源码放入 `plugin/acms/`。
 
-2. **导入数据库**
+2. **导入数据库**  
    执行以下命令创建数据表和初始数据：
    ```bash
    php webman app-plugin:install acms
    ```
    或手动执行 `plugin/acms/install.sql`。
 
-3. **注册路由**
+3. **注册路由**  
    插件自带路由文件 `plugin/acms/config/route.php`，Webman 会自动加载。
 
-4. **注册菜单（可选）**
+4. **注册菜单（可选）**  
    插件自带菜单配置 `plugin/acms/config/menu.php`，安装时自动导入后台菜单。
 
-5. **访问系统**
-   - 后台地址：`/app/admin/acms/article/index`
+5. **访问系统**  
+   - 后台地址：`/app/admin/acms/article/index`  
    - 前台地址：`/app/acms`
 
 ## 目录结构
@@ -120,5 +120,5 @@ github: https://github.com/dbx192/acms
 
 ## 作者与协议
 
-- **作者**：ouyangyi
+- **作者**：ouyangyi  
 - **开源协议**：MIT
