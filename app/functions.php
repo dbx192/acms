@@ -4,7 +4,7 @@
 if (!function_exists('csrf_token')) {
     function csrf_token()
     {
-        $_token = md5(uniqid());
+        $_token = md5(uniqid('', true));
         \request()->session()->set('csrf_token', $_token);
         return $_token;
     }

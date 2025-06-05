@@ -1,0 +1,11 @@
+/runtime
+.idea
+.vscode
+.cursor
+.github
+/vendor
+*.log
+.env
+/tests/tmp
+/tests/.phpunit.result.cache
+**/public/upload
