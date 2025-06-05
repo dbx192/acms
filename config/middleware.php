@@ -6,7 +6,7 @@ use plugin\user\api\Middleware as UserMiddleware;
 return [
     '' => [
         new UserMiddleware(['admin']),
-        CsrfTokenCheck::class,
+        new CsrfTokenCheck(['admin']),
     ],
     'admin' => [
         AdminMiddleware::class
