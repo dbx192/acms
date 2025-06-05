@@ -75,6 +75,20 @@ plugin/
 
 - 检查 `config/database.php` 数据库配置，确保与实际环境一致。
 
+### 4. mysql8.0以下版本
+install.sql中utf8mb4_0900_ai_ci改为utf8mb4_general_ci
+
+### 5. webman安装laravel组件环境
+blade模板引擎
+
+### 6. 分页
+composer require jasongrimes/paginator
+
+### 7. csrf
+- csrf_token、csrf_field
+- 新增autoload.php + functions.php(自定义了简单的函数替代）
+
+
 ## 二次开发建议
 
 - 控制器、模型、视图均遵循 Webman 规范，可直接扩展。
