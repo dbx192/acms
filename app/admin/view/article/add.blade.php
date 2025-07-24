@@ -142,7 +142,7 @@
 
     <script src="/app/admin/component/layui/layui.js"></script>
     <script src="/app/admin/component/pear/pear.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="/app/acms/js/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.min.js"></script>
 
     <script>
