@@ -3,9 +3,8 @@
 namespace plugin\acms\app\model;
 
 use plugin\user\app\model\User;
-use support\Model;
 
-class Comment extends Model
+class Comment extends BaseModel
 {
     protected $table = 'acms_comments';
 

@@ -2,11 +2,10 @@
 
 namespace plugin\acms\app\model;
 
-use support\Model;
 use plugin\user\app\model\User;
 
 
-class CommentLike extends Model
+class CommentLike extends BaseModel
 {
     protected $table = 'acms_comment_likes';
 

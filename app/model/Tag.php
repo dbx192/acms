@@ -2,7 +2,6 @@
 
 namespace plugin\acms\app\model;
 
-use support\Model;
 
 /**
  * @property integer $id 主键(主键)
@@ -15,13 +14,8 @@ use support\Model;
  * @property string $created_at 创建时间
  * @property string $updated_at 更新时间
  */
-class Tag extends Model
+class Tag extends BaseModel
 {
-    /**
-     * @var string
-     */
-    protected $connection = 'plugin.admin.mysql';
-
     /**
      * The table associated with the model.
      *

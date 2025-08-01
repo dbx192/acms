@@ -2,7 +2,6 @@
 
 namespace plugin\acms\app\model;
 
-use support\Model;
 
 /**
  * @property integer $id 主键(主键)
@@ -26,13 +25,8 @@ use support\Model;
  * @property integer $user_id 发布者ID
  * @property integer $type 文章类型 1.markdown，2.html
  */
-class Article extends Model
+class Article extends BaseModel
 {
-    /**
-     * @var string
-     */
-    protected $connection = 'plugin.admin.mysql';
-
     /**
      * The table associated with the model.
      *
