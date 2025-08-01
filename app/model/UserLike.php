@@ -6,6 +6,8 @@ use plugin\user\app\model\User;
 
 class UserLike extends BaseModel
 {
+    protected $table = 'acms_user_likes';
+    
     protected $fillable = ['user_id', 'article_id'];
     
     public function user()

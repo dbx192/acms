@@ -6,6 +6,8 @@ use plugin\user\app\model\User;
 
 class UserHistory extends BaseModel
 {
+    protected $table = 'acms_user_histories';
+    
     protected $fillable = ['user_id', 'article_id'];
     
     public function user()
