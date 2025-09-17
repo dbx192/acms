@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'CMS系统 - 内容管理系统')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <link href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/5.2.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/app/user/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.2.1/css/all.min.css" rel="stylesheet">
     <!-- Markdown解析库 -->
     <link href="/app/acms/css/github-markdown.min.css" rel="stylesheet">
     <link href="/app/acms/css/github.min.css" rel="stylesheet">
     <link href="/app/acms/css/pagination.css" rel="stylesheet">
-    <script src="/app/acms/js/jquery.min.js"></script>
     <style>
         body {
             background-color: #f8f9fa;
@@ -198,9 +197,9 @@
             background-color: #f6f8fa;
         }
 
+        
+        </style>
         @yield('additional-styles')
-
-    </style>
 </head>
 <body>
     <!-- 导航栏 -->
@@ -246,10 +245,10 @@
                     </div>
                 </form>
                 <div class="d-flex align-items-center ms-3">
-                    <?php if (session('user')){ ?>
+                    @if(session('user'))
                     <div class="nav-item dropdown">
                         <a class="dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
-                            <img src="<?=htmlspecialchars(session('user.avatar'))?>" class="rounded me-2" height="40px" width="40px" /><?= htmlspecialchars(session('user.nickname')) ?>
+                            <img src="{{ session('user.avatar') }}" class="rounded me-2" height="40px" width="40px" />{{ session('user.nickname') }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/app/user">会员中心</a></li>
@@ -259,12 +258,12 @@
                             <li><a class="dropdown-item" href="/app/user/logout">退出</a></li>
                         </ul>
                     </div>
-                    <?php }else{ ?>
+                    @else
                     <a href="/app/user/login" class="btn btn-primary me-2">登录</a>
-                    <?php if ($setting['register_enable'] ?? true){ ?>
+                    @if(($setting['register_enable'] ?? true))
                     <a href="/app/user/register" class="btn btn-outline-primary">注册</a>
-                    <?php } ?>
-                    <?php } ?>
+                    @endif
+                    @endif
                 </div>
             </div>
         </div>
@@ -329,8 +328,8 @@
         </div>
     </div>
 
-    <script src="/app/acms/js/jquery.min.js"></script>
-    <script src="/app/acms/js/bootstrap.bundle.min.js"></script>
+    <script src="/app/user/js/jquery.min.js"></script>
+    <script src="/app/user/js/bootstrap.bundle.min.js"></script>
     <!-- Markdown解析库 -->
     <script src="/app/acms/js/marked.min.js"></script>
     <script src="/app/acms/js/highlight.min.js"></script>

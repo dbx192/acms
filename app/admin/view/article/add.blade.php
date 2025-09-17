@@ -9,7 +9,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <link rel="stylesheet" href="/app/admin/component/pear/css/pear.css" />
-    <link href="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/css/editormd.min.css" rel="stylesheet">
+    <link href="/app/acms/editor.md/css/editormd.min.css" rel="stylesheet">
     <style>
         .editormd-fullscreen {
             z-index: 19891017;
@@ -140,51 +140,54 @@
         </div>
     </form>
 
+    <script src="/app/user/js/jquery.min.js"></script>
+    <script>
+        window.Zepto = window.Zepto || window.jQuery;
+    </script>
     <script src="/app/admin/component/layui/layui.js"></script>
     <script src="/app/admin/component/pear/pear.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/editor.md@1.5.0/editormd.min.js"></script>
-
+    <script src="/app/acms/editor.md/editormd.min.js"></script>
     <script>
-        layui.use(['form', 'element', 'select', 'layer'], function() {
+        // 初始化Markdown编辑器
+        let editor = editormd("editor", {
+            width: "100%",
+            height: 640,
+            path: "/app/acms/editor.md/lib/",
+            toolbarIcons: function() {
+                return [
+                    "undo", "redo", "|",
+                    "bold", "italic", "quote", "uppercase", "lowercase", "|",
+                    "h1", "h2", "h3", "h4", "h5", "h6", "|",
+                    "list-ul", "list-ol", "hr", "|",
+                    "link", "reference-link", "image", "code", "preformatted-text",
+                    "code-block", "table", "datetime", "|",
+                    "watch", "preview", "fullscreen", "|",
+                    "help"
+                ]
+            },
+            saveHTMLToTextarea: true, // 保存HTML到Textarea
+            emoji: true,
+            taskList: true,
+            tocm: true, // Using [TOCM]
+            tex: true, // 开启科学公式TeX语言支持
+            flowChart: true, // 开启流程图支持
+            sequenceDiagram: true, // 开启时序/序列图支持
+            imageUpload: true,
+            imageFormats: ["jpg", "jpeg", "gif", "png", "webp"],
+            imageUploadURL: "/app/admin/acms/upload/image" // 图片上传接口
+        });
+
+        layui.use(['form', 'element', 'select', 'layer', 'jquery'], function() {
             let form = layui.form;
             let element = layui.element;
             let select = layui.select;
             let layer = layui.layer;
-
+            let $ = layui.jquery;
             // 初始化多选标签
             select.render({
                 el: 'select[name="tags"]'
             });
 
-            // 初始化Markdown编辑器
-            let editor = editormd("editor", {
-                width: "100%",
-                height: 640,
-                path: "https://cdn.jsdelivr.net/npm/editor.md@1.5.0/lib/",
-                toolbarIcons: function() {
-                    return [
-                        "undo", "redo", "|",
-                        "bold", "italic", "quote", "uppercase", "lowercase", "|",
-                        "h1", "h2", "h3", "h4", "h5", "h6", "|",
-                        "list-ul", "list-ol", "hr", "|",
-                        "link", "reference-link", "image", "code", "preformatted-text",
-                        "code-block", "table", "datetime", "|",
-                        "watch", "preview", "fullscreen", "|",
-                        "help"
-                    ]
-                },
-                saveHTMLToTextarea: true, // 保存HTML到Textarea
-                emoji: true,
-                taskList: true,
-                tocm: true, // Using [TOCM]
-                tex: true, // 开启科学公式TeX语言支持
-                flowChart: true, // 开启流程图支持
-                sequenceDiagram: true, // 开启时序/序列图支持
-                imageUpload: true,
-                imageFormats: ["jpg", "jpeg", "gif", "png", "webp"],
-                imageUploadURL: "/app/admin/acms/upload/image" // 图片上传接口
-            });
 
             // 监听提交
             form.on('submit(article-save)', function(data) {
