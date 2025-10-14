@@ -9,6 +9,51 @@
             font-size: 1.1rem;
         }
 
+        .article-hero {
+            position: relative;
+            padding: 22px 20px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #eef2ff 0%, #f8fbff 50%, #eaf7ff 100%);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            margin-bottom: 16px;
+        }
+        .article-hero:after {
+            content: '';
+            position: absolute;
+            right: -35px;
+            top: -35px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: radial-gradient(closest-side, rgba(99,102,241,0.25), rgba(99,102,241,0));
+        }
+        .article-title {
+            margin: 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2b2e4a;
+        }
+        .article-meta {
+            font-size: 0.95rem;
+            color: #6b7280;
+        }
+        .meta-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.06);
+            padding: 6px 10px;
+            border-radius: 999px;
+            margin-right: 8px;
+            margin-top: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            color: #4b5563;
+        }
+        .meta-chip i { color: #9aa0a6; }
+        .favorite-btn-link { text-decoration: none; }
+
         .article-content img {
             max-width: 100%;
             height: auto;
@@ -103,21 +148,20 @@
 
 @section('content')
     <div class="card p-4">
-        <h1 class="mb-3">{{ $article->title }}</h1>
-
-        <div class="article-meta mb-4">
-            <span><i class="far fa-folder"></i> <a href="/app/acms/category/{{ $article->category_id }}"
-                    class="text-decoration-none text-secondary">{{ $article->category->name ?? '未分类' }}</a></span>
-            <span class="ms-3"><i class="far fa-user"></i> {{ $article->user->nickname ?? '管理员' }}</span>
-            <span class="ms-3"><i class="far fa-clock"></i> {{ $article->created_at->format('Y-m-d H:i') }}</span>
-            <span class="ms-3"><i class="far fa-eye"></i> {{ $article->views }} 阅读</span>
-            @if (session('user'))
-                <span class="ms-3">
+        <div class="article-hero">
+            <h1 class="article-title">{{ $article->title }}</h1>
+            <div class="article-meta mt-2 d-flex flex-wrap align-items-center">
+                <span class="meta-chip"><i class="far fa-folder"></i> <a href="/app/acms/list?category_id={{ $article->category_id }}" class="text-decoration-none">{{ $article->category->name ?? '未分类' }}</a></span>
+                <span class="meta-chip"><i class="far fa-user"></i> {{ $article->user->nickname ?? '管理员' }}</span>
+                <span class="meta-chip"><i class="far fa-clock"></i> {{ $article->created_at->format('Y-m-d H:i') }}</span>
+                <span class="meta-chip"><i class="far fa-eye"></i> {{ $article->views }} 阅读</span>
+                @if (session('user'))
+                <span class="meta-chip">
                     <i class="{{ $article->is_favorite ? 'fas fa-heart text-danger' : 'far fa-heart text-secondary' }}"></i>
-                    <a href="#" class="favorite-btn"
-                        data-id="{{ $article->id }}">{{ $article->is_favorite ? '取消收藏' : '收藏' }}</a>
+                    <a href="#" class="favorite-btn favorite-btn-link" data-id="{{ $article->id }}">{{ $article->is_favorite ? '取消收藏' : '收藏' }}</a>
                 </span>
-            @endif
+                @endif
+            </div>
         </div>
 
         @if ($article->thumb)
@@ -172,10 +216,20 @@
         @if ($article->tags)
             <div class="mt-4 tag-cloud">
                 @foreach (explode(',', $article->tags) as $tagId)
-                    @php $tag = $tags->firstWhere('id', $tagId); @endphp
+                    @php
+                        $tag = null;
+                        if ($tags instanceof \Illuminate\Support\Collection) {
+                            $tag = $tags->firstWhere('id', $tagId);
+                        } elseif (is_array($tags)) {
+                            foreach ($tags as $t) {
+                                $tid = is_array($t) ? ($t['id'] ?? null) : ($t->id ?? null);
+                                if ((string)$tid === (string)$tagId) { $tag = $t; break; }
+                            }
+                        }
+                    @endphp
                     @if ($tag)
-                        <a href="/app/acms/tag/{{ $tag->id }}"
-                            class="tag text-decoration-none text-dark">{{ $tag->name }}</a>
+                        <a href="/app/acms/tag/{{ is_array($tag) ? ($tag['id'] ?? '') : ($tag->id ?? '') }}"
+                            class="tag text-decoration-none text-dark">{{ is_array($tag) ? ($tag['name'] ?? '') : ($tag->name ?? '') }}</a>
                     @endif
                 @endforeach
             </div>

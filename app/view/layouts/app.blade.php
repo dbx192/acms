@@ -206,7 +206,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/app/acms">CMS系统</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNavDropdown">
@@ -218,7 +218,7 @@
                     @foreach($categoryTree as $navCategory)
                     @if(isset($navCategory['children']) && count($navCategory['children']) > 0)
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle {{ (isset($category) && $category->id == $navCategory['id']) || (isset($article) && $article->category_id == $navCategory['id']) ? 'active' : '' }}" href="/app/acms/list?category_id={{$navCategory['id']}}" id="navbarDropdown{{$navCategory['id']}}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle {{ (isset($category) && $category->id == $navCategory['id']) || (isset($article) && $article->category_id == $navCategory['id']) ? 'active' : '' }}" href="/app/acms/list?category_id={{$navCategory['id']}}" id="navbarDropdown{{$navCategory['id']}}" role="button" data-toggle="dropdown" aria-expanded="false">
                             {{$navCategory['name']}}
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown{{$navCategory['id']}}">
@@ -247,7 +247,7 @@
                 <div class="d-flex align-items-center ms-3">
                     @if(session('user'))
                     <div class="nav-item dropdown">
-                        <a class="dropdown-toggle text-secondary" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="dropdown-toggle text-secondary" href="#" role="button" data-toggle="dropdown">
                             <img src="{{ session('user.avatar') }}" class="rounded me-2" height="40px" width="40px" />{{ session('user.nickname') }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -266,7 +266,6 @@
                     @endif
                 </div>
             </div>
-        </div>
         </div>
     </nav>
 
