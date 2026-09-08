@@ -23,10 +23,8 @@
                     <div class="layui-input-block">
                         <select name="parent_id">
                             <option value="0">顶级分类</option>
-                            @foreach($categories as $item)
-                            @if($item->id != $category->id)
-                            <option value="{{$item->id}}" @if($category->parent_id == $item->id) selected @endif>{{$item->name}}</option>
-                            @endif
+                            @foreach($categoryOptions as $option)
+                            <option value="{{$option['id']}}" @if($category->parent_id == $option['id']) selected @endif>{{ str_repeat('　', $option['depth']) }}@if($option['depth'] > 0)├─ @endif{{$option['name']}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -40,7 +38,11 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">缩略图</label>
                     <div class="layui-input-block">
-                        <input type="text" name="thumb" value="{{$category->thumb}}" placeholder="请输入缩略图URL" autocomplete="off" class="layui-input">
+                        <img src="{{ $category->thumb ?? '' }}" style="height:100px; max-width:200px; object-fit:cover; border:1px solid #e6e6e6; border-radius:4px; margin-bottom:8px;"/>
+                        <input type="text" style="display:none" name="thumb" value="{{ $category->thumb ?? '' }}" />
+                        <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="thumb-upload">
+                            <i class="layui-icon layui-icon-upload"></i>上传图片
+                        </button>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -98,10 +100,26 @@
     <script src="/app/admin/component/layui/layui.js"></script>
     <script src="/app/admin/component/pear/pear.js"></script>
     <script>
-        layui.use(['form', 'jquery', 'layer'], function() {
+        layui.use(['form', 'jquery', 'layer', 'upload'], function() {
             let form = layui.form;
             let $ = layui.jquery;
             let layer = layui.layer;
+            let upload = layui.upload;
+
+            // 缩略图上传
+            upload.render({
+                elem: '#thumb-upload',
+                url: '/app/admin/acms/upload/image',
+                acceptMime: 'image/gif,image/jpeg,image/jpg,image/png,image/webp',
+                field: 'editormd-image-file',
+                done: function(res) {
+                    if (res.success === 1) {
+                        this.item.prev().val(res.url).prev().attr('src', res.url);
+                    } else {
+                        layer.msg(res.message || '上传失败', {icon: 2});
+                    }
+                }
+            });
 
             // 监听提交
             form.on('submit(category-update)', function(data) {

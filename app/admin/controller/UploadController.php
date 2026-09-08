@@ -43,19 +43,23 @@ class UploadController
             $file->move($full_path);
             $urls[] = "/app/acms/{$relative_dir}/{$name}";
         }
+        // editor.md 的图片上传通过隐藏 iframe 提交表单，iframe 内需要把响应作为
+        // HTML 文档渲染后读取 body 文本；若返回 application/json，部分浏览器会直接
+        // 触发下载导致编辑器拿不到响应。这里 body 仍为 JSON，Content-Type 用 text/html。
+        $headers = ['Content-Type' => 'text/html; charset=utf-8'];
         if (empty($urls)) {
-            return json([
+            return response(json_encode([
                 'success' => 0,
                 'message' => '上传失败',
                 'url' => ''
-            ]);
+            ]), 200, $headers);
         }
         // editor.md 只用第一个图片
-        return json([
+        return response(json_encode([
             'success' => 1,
             'message' => '上传成功',
             'url' => $urls[0],
             'urls' => $urls // 可扩展返回所有图片
-        ]);
+        ]), 200, $headers);
     }
 }

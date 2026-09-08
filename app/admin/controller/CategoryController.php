@@ -114,14 +114,13 @@ class CategoryController
             return redirect('/app/admin/acms/category/index');
         }
 
-        // 获取所有分类供选择父级
-        $categories = Category::where('id', '<>', $id)
-            ->orderBy('sort', 'desc')
-            ->get();
+        // 获取所有分类供选择父级（排除自身及后代，防止挂到自己下面形成环）
+        $categories = Category::orderBy('sort', 'desc')->get();
 
         return view('category/edit', [
             'category' => $category,
-            'categories' => $categories
+            'categories' => $categories,
+            'categoryOptions' => Category::treeOptions($categories, $id)
         ]);
     }
 

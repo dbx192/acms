@@ -157,6 +157,7 @@ class ArticleController
         return view('article/edit', [
             'article' => $article,
             'categories' => $categories,
+            'categoryOptions' => Category::treeOptions($categories),
             'tags' => $tags,
             'articleTags' => $articleTags
         ]);

@@ -53,6 +53,18 @@ class IndexController
             ->with('category')
             ->paginate($limit, ['*'], 'page', $page);
 
+        // 计算每篇文章的封面：文章缩略图 > 文章内容第一张图 > 分类缩略图；都没有则为空（前台不显示图）
+        foreach ($articles as $article) {
+            $cover = $article->thumb;
+            if (!$cover) {
+                $cover = $this->extractFirstImage($article->content);
+            }
+            if (!$cover && $article->category) {
+                $cover = $article->category->thumb;
+            }
+            $article->cover = $cover;
+        }
+
         $params = $request->only(['category_id', 'tag_id', 'keyword']);
         $pageUrl = '/app/acms/list?page=(:num)' . ($params ? '&' . http_build_query($params) : '');
 
@@ -78,10 +90,24 @@ class IndexController
         $title = '文章列表';
         $sidebarTitle = '筛选条件';
         $sidebarContent = [];
+        $category = null;
+        $categoryCover = null;
         if ($categoryId) {
             $category = $categories->where('id', $categoryId)->first();
             $title = ($category ? $category->name : '分类') . ' - 文章列表';
             $sidebarContent[] = '分类：' . ($category ? $category->name : $categoryId);
+            // 分类封面：分类缩略图优先；分类没传图时回退到分类下文章的图（文章缩略图或文中首图）；都没有则不显示
+            if ($category && $category->thumb) {
+                $categoryCover = $category->thumb;
+            } else {
+                foreach ($articles as $article) {
+                    $articleImage = $article->thumb ?: $this->extractFirstImage($article->content);
+                    if ($articleImage) {
+                        $categoryCover = $articleImage;
+                        break;
+                    }
+                }
+            }
         }
         if ($tagId) {
             $tag = $tags->where('id', $tagId)->first();
@@ -103,7 +129,30 @@ class IndexController
             'sidebarTitle' => $sidebarTitle,
             'sidebarContent' => $sidebarContent,
             'params' => $request->get(),
+            'category' => $category,
+            'categoryCover' => $categoryCover,
         ]);
+    }
+
+    /**
+     * 从 Markdown/HTML 内容中提取第一张图片的 URL
+     * @param string|null $content
+     * @return string|null
+     */
+    protected function extractFirstImage(?string $content): ?string
+    {
+        if (!$content) {
+            return null;
+        }
+        // Markdown 图片：![alt](url "title")
+        if (preg_match('/!\[[^\]]*\]\(\s*(\S+?)\s*(\s+"[^"]*")?\)/', $content, $matches)) {
+            return $matches[1];
+        }
+        // HTML 图片：<img src="url">
+        if (preg_match('/<img[^>]+src=["\']([^"\']+)["\']/i', $content, $matches)) {
+            return $matches[1];
+        }
+        return null;
     }
 
     /**

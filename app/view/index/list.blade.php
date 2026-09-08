@@ -105,11 +105,17 @@
             <div class="acms-hero-subtitle">本页共 {{ count($articles) }} 篇内容</div>
         </div>
     </div>
+    @if(!empty($categoryCover))
+    <img src="{{ $categoryCover }}" alt="{{ $title }}" style="width:100%; max-height:240px; object-fit:cover; border-radius:12px; margin-top:14px;">
+    @endif
     </div>
 
 @if(count($articles) > 0)
     @foreach($articles as $article)
     <div class="card mb-3 article-card">
+        @if(!empty($article->cover))
+        <img src="{{ $article->cover }}" alt="{{ $article->title }}" style="width:100%; height:190px; object-fit:cover; border-radius:14px 14px 0 0;">
+        @endif
         <div class="card-body">
             <h5 class="article-title">
                 <a href="/app/acms/article/{{ $article->id }}" class="text-decoration-none">{{ $article->title }}</a>

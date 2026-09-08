@@ -33,9 +33,8 @@
                     <div class="layui-input-block">
                         <select name="category_id" lay-verify="required">
                             <option value="">请选择分类</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" @if ($article->category_id == $category->id) selected @endif>
-                                    {{ $category->name }}</option>
+                            @foreach ($categoryOptions as $option)
+                                <option value="{{ $option['id'] }}" @if ($article->category_id == $option['id']) selected @endif>{{ str_repeat('　', $option['depth']) }}@if ($option['depth'] > 0)├─ @endif{{ $option['name'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -49,8 +48,11 @@
                 <div class="layui-form-item">
                     <label class="layui-form-label">缩略图</label>
                     <div class="layui-input-block">
-                        <input type="text" name="thumb" value="{{ $article->thumb }}" placeholder="请输入缩略图URL"
-                            autocomplete="off" class="layui-input">
+                        <img src="{{ $article->thumb ?? '' }}" style="height:100px; max-width:200px; object-fit:cover; border:1px solid #e6e6e6; border-radius:4px; margin-bottom:8px;"/>
+                        <input type="text" style="display:none" name="thumb" value="{{ $article->thumb ?? '' }}" />
+                        <button type="button" class="pear-btn pear-btn-primary pear-btn-sm" id="thumb-upload">
+                            <i class="layui-icon layui-icon-upload"></i>上传图片
+                        </button>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -184,15 +186,65 @@
             imageUploadURL: "/app/admin/acms/upload/image" // 图片上传接口
         });
 
-        layui.use(['form', 'element', 'select', 'layer', 'jquery'], function() {
+        layui.use(['form', 'element', 'select', 'layer', 'jquery', 'upload'], function() {
             let form = layui.form;
             let element = layui.element;
             let select = layui.select;
             let layer = layui.layer;
+            let upload = layui.upload;
             let $ = layui.jquery;
             // 初始化多选标签
             select.render({
                 el: 'select[name="tags"]'
+            });
+
+            // 缩略图上传
+            upload.render({
+                elem: '#thumb-upload',
+                url: '/app/admin/acms/upload/image',
+                acceptMime: 'image/gif,image/jpeg,image/jpg,image/png,image/webp',
+                field: 'editormd-image-file',
+                done: function(res) {
+                    if (res.success === 1) {
+                        this.item.prev().val(res.url).prev().attr('src', res.url);
+                    } else {
+                        layer.msg(res.message || '上传失败', { icon: 2 });
+                    }
+                }
+            });
+
+            // 编辑器内粘贴图片直接上传
+            $('#editor').on('paste', function(e) {
+                let cd = e.originalEvent.clipboardData || e.clipboardData;
+                if (!cd || !cd.items) return;
+                for (let i = 0; i < cd.items.length; i++) {
+                    let item = cd.items[i];
+                    if (item.kind === 'file' && item.type.indexOf('image/') === 0) {
+                        e.preventDefault();
+                        let file = item.getAsFile();
+                        let fd = new FormData();
+                        fd.append('editormd-image-file', file, 'paste-' + Date.now() + '.png');
+                        $.ajax({
+                            url: '/app/admin/acms/upload/image',
+                            type: 'POST',
+                            data: fd,
+                            processData: false,
+                            contentType: false,
+                            dataType: 'json',
+                            success: function(res) {
+                                if (res.success === 1) {
+                                    editor.cm.replaceSelection('\r\n![](' + res.url + ')\r\n');
+                                    editor.cm.focus();
+                                } else {
+                                    layer.msg(res.message || '上传失败', { icon: 2 });
+                                }
+                            },
+                            error: function() {
+                                layer.msg('图片上传失败', { icon: 2 });
+                            }
+                        });
+                    }
+                }
             });
 
             // 监听提交

@@ -63,4 +63,51 @@ class Category extends Model
     {
         return $this->hasMany(self::class, 'parent_id', 'id');
     }
-} 
+
+    /**
+     * 把扁平分类集合按层级整理为带深度(depth)的有序列表，用于下拉选择
+     *
+     * @param iterable $categories 分类集合（已按期望排序）
+     * @param int $excludeId 需要排除的分类ID（编辑分类时排除自身及其所有后代，防止挂到自己下面形成环）
+     * @return array [['id' => int, 'name' => string, 'depth' => int], ...]
+     */
+    public static function treeOptions(iterable $categories, int $excludeId = 0): array
+    {
+        // 按 parent_id 分组，保持集合原有排序
+        $grouped = [];
+        foreach ($categories as $category) {
+            $grouped[(int) $category->parent_id][] = $category;
+        }
+
+        // 收集需要排除的分类及其全部后代
+        $excluded = [];
+        if ($excludeId) {
+            $stack = [$excludeId];
+            while ($stack) {
+                $id = array_pop($stack);
+                $excluded[$id] = true;
+                foreach ($grouped[$id] ?? [] as $child) {
+                    $stack[] = (int) $child->id;
+                }
+            }
+        }
+
+        $result = [];
+        $traverse = function (int $parentId, int $depth) use (&$traverse, &$result, $grouped, $excluded) {
+            foreach ($grouped[$parentId] ?? [] as $category) {
+                if (isset($excluded[(int) $category->id])) {
+                    continue;
+                }
+                $result[] = [
+                    'id' => (int) $category->id,
+                    'name' => $category->name,
+                    'depth' => $depth,
+                ];
+                $traverse((int) $category->id, $depth + 1);
+            }
+        };
+        $traverse(0, 0);
+
+        return $result;
+    }
+}
